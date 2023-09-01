@@ -1,0 +1,29 @@
+div {
+  color: #888787;
+  padding: .8rem;
+  border: solid 1px #333333;
+  border-radius: 10px;
+  width: 30rem;
+  height: max-content;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  select {
+    width: 20rem;
+  }
+  input {
+    width: 8rem;
+    height: auto;
+    display: flex;
+    border-radius: 10px;
+  }
+  span {
+    margin: 0 2rem;
+    text-align: center;
+    width: 200px;
+  }
+  i {
+    cursor: pointer;
+  }
+}

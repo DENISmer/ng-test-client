@@ -1,0 +1,30 @@
+<div [ngStyle]="{backgroundColor: colors[currentColor]}">
+  <span>
+    <i class="material-icons" [(ngModel)]="currentColor" (click)="onArrowClick($event,false)">arrow_left</i>
+    <i class="material-icons" [(ngModel)]="currentColor" (click)="onArrowClick($event,true)">arrow_right</i>
+  </span>
+
+  <span>{{title}}</span>
+<!--  <input type="text" [(ngModel)]="title" (ngModelChange)="onInputChange($event)"/>-->
+<!--  <select >-->
+<!--    <option *ngFor="let item of config.wpsUrls">{{item}}</option>-->
+<!--  </select>-->
+  <p></p>
+  <button (click)="onGetCapabilities()">GET PROCESSES</button>
+  <p>select wps process</p>
+  <select>
+    <option *ngFor="let item of processes">{{item.value.title}}</option>
+  </select>
+  <p>GET CONFIGURATION</p>
+  <div *ngIf="setConfiguration">
+
+  </div>
+
+  <button (click)="onSetConfiguration()">GET CONFIGURATION</button>
+  <p>OR</p>
+  <input type="file" class="file-upload"[(ngModel)]="inputFile" (change)="onFileInputChange($event)">
+
+  <textarea  placeholder="image/tiff" type="text" [(ngModel)]="textAreaValue" (ngModelChange)="onTextAreaChange($event)"></textarea>
+  <button (click)="execute(url, dataInput)">execute</button>
+
+</div>
