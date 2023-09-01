@@ -38,5 +38,12 @@ export const config = {
         </wps:Output>
         </wps:ResponseDocument>
         </wps:ResponseForm>
-        </wps:Execute>`
+        </wps:Execute>`,
+
+  requestParams : {
+    service : 'WPS',
+    version : '1.0.0',
+    request : { execute: 'Execute',getCapabilities: 'GetCapabilities', describeProcess: 'DescribeProcess'},
+    identifier : 'default'
+  }
 }
