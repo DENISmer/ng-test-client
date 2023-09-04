@@ -42,26 +42,32 @@ export class DateService {
         xsi:schemaLocation="http://www.opengis.net/wps/1.0.0
         http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd">
         <ows:Identifier>gs:CCA_</ows:Identifier>
-        <wps:DataInputs>
-        <wps:Input>
-        <ows:Identifier>Raster</ows:Identifier>
-        <wps:Data>
-        <wps:ComplexData mimeType="image/tiff" encoding="base64">
-        ${DateService.imageData}
-        </wps:ComplexData>
-        </wps:Data>
-        </wps:Input><wps:Input>
-        <ows:Identifier>Minimum grid size</ows:Identifier>
-        <wps:Data>
-        <wps:LiteralData>18</wps:LiteralData>
-        </wps:Data>
-        </wps:Input><wps:Input>
-        <ows:Identifier>Dendrogram criteria</ows:Identifier>
-        <wps:Data>
-        <wps:LiteralData>0.5</wps:LiteralData>
-        </wps:Data>
-        </wps:Input>
-        </wps:DataInputs>
+          <wps:DataInputs>
+
+            <wps:Input>
+              <ows:Identifier>Raster</ows:Identifier>
+              <wps:Data>
+              <wps:ComplexData mimeType="image/tiff" encoding="base64">
+              ${DateService.imageData}
+              </wps:ComplexData>
+              </wps:Data>
+            </wps:Input>
+
+            <wps:Input>
+              <ows:Identifier>Minimum grid size</ows:Identifier>
+              <wps:Data>
+              <wps:LiteralData>18</wps:LiteralData>
+              </wps:Data>
+            </wps:Input>
+
+            <wps:Input>
+              <ows:Identifier>Dendrogram criteria</ows:Identifier>
+              <wps:Data>
+              <wps:LiteralData>0.5</wps:LiteralData>
+              </wps:Data>
+            </wps:Input>
+
+          </wps:DataInputs>
         <wps:ResponseForm>
         <wps:ResponseDocument storeExecuteResponse="false" lineage="false" status="false">
         <wps:Output asReference="false" mimeType="image/tiff">

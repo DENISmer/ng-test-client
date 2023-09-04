@@ -20,7 +20,52 @@ import {findTagByName, findTagByPath, findTagsByPath} from "xml-utils";
   }
 
   function getDataFromDescribeProcess(outerXML: string){
+    let inputDataOuter = findTagsByPath(outerXML,['wps:ProcessDescriptions',"ProcessDescription","DataInputs",'Input']);
+    let outputDataOuter = findTagsByPath(outerXML,['wps:ProcessDescriptions',"ProcessDescription","ProcessOutputs"]);
+    let inputItems: any = [];
+    let arrayOfOutputStringTypes = [];
+    let result: any = {};
+    const arrayOfOutputTypes = findTagsByPath(outputDataOuter[0].outer,['Output','ComplexOutput','Supported','Format']);
 
+    console.log(arrayOfOutputTypes)
+
+    for(let i = 0; i < inputDataOuter.length; i++){ //set Inputs Types array
+      if(inputDataOuter[i].inner){
+
+        const inputItem: any = {
+          identifier: findTagByName(inputDataOuter[i].outer, 'ows:Identifier')?.inner,
+          title: findTagByName(inputDataOuter[i].outer, 'ows:Title')?.inner,
+          complexData: {
+            mimeType: findTagByPath(inputDataOuter[i].outer, ['ComplexData', 'Supported', 'Format', 'MimeType'])?.inner,
+            encoding: findTagByPath(inputDataOuter[i].outer, ['ComplexData', 'Supported', 'Format', 'Encoding'])?.inner,
+          },
+          literalData: {
+            dataType: findTagByPath(inputDataOuter[i].outer, ['LiteralData', 'DataType'])?.inner,
+          }
+        }
+        inputItems.push(inputItem);
+      }
+    }
+
+    for(let i: number = 0;i < arrayOfOutputTypes.length;i++){
+      arrayOfOutputStringTypes.push(findTagByName(arrayOfOutputTypes[i].outer,"MimeType")?.inner)
+    }
+
+    const outputItem: any = { //set outputs types
+        identifier: findTagByPath(outputDataOuter[0].outer,['Output','ows:Identifier'])?.inner,
+        title: findTagByPath(outputDataOuter[0].outer,['Output','ows:Title'])?.inner,
+        complexOutput: {
+          mimeType: arrayOfOutputStringTypes,
+        }
+    }
+
+    result = {
+      input : inputItems,
+      output : outputItem
+    }
+    console.log(result);
+
+    return result
   }
 
   export  async function getProcesses(wpsUrl: string,params: any) {
@@ -56,6 +101,9 @@ import {findTagByName, findTagByPath, findTagsByPath} from "xml-utils";
 }
 
 export async function describeProcess(url: string,params: any){
+  let dataInputs: [];
+  let dataOutputs: [];
+
   const currentOptions = {
     headers:{
       "Content-type": "text/xml",
@@ -71,7 +119,7 @@ export async function describeProcess(url: string,params: any){
     try {
       await axios.get(url,currentOptions)
         .then(response => {
-          console.log(response);
+          getDataFromDescribeProcess(response.data);
         })
     }catch (e){
       console.log(e);
