@@ -3,7 +3,7 @@ import {DateService} from "../shared/date.service";
 import axios from "axios";
 import "tiff.js";
 import '../shared/wps.requests'
-import {describeProcess, getProcesses} from "../shared/wps.requests";
+import {configureTheExecutePayload, describeProcess, getProcesses} from "../shared/wps.requests";
 // declare function require(name:string): any;
 
 declare function require(name:string): any;
@@ -20,12 +20,13 @@ export class SelectorComponent{
       console.log(value);
     })
     this.dataService.onFileInputChange$.subscribe(value => {
-      this.execute(this.url, value);
+      // this.execute(this.url, value);
     })
   }
 
   fileByteArray: any = [];
   inputFile: any;
+  base64File: any;
   imageUrl: string = "";
   dataInput: string = '';
   title: string = 'title';
@@ -35,10 +36,13 @@ export class SelectorComponent{
   url = 'http://wps.esemc.nsc.ru:8080/geoserver/ows';
   processes: any;
   setConfiguration = false;
+  describeProcessResult: any;
+  describeProcessIsReady = false;
+  fileIsReady = false;
 
 
   colors: string[] = [
-    '#9f3535',
+    '#504343',
     '#fff',
     '#010101',
   ];
@@ -55,18 +59,18 @@ export class SelectorComponent{
   }
   cg = require('../config.js');
 
-  execute = (url: string,data: any): any => {
-    // console.log(data)
+  execute = (): any => {
+    const url = this.url;
 
-    if(url && data){
-      axios.post(`${url}`, this.cg.config.xmlPayloadStart + data + this.cg.config.xmlPayloadEnd, this.configureRequest)
+    const xmlReadyPayload = configureTheExecutePayload(this.base64File, this.describeProcessResult,this.processes)
+    if(url && this.describeProcessResult){
+      axios.post(`${url}`, this.cg.config.xmlPayloadStart + xmlReadyPayload + this.cg.config.xmlPayloadEnd, this.configureRequest)
         .then(getXHRResponse => {
           console.log("AXIOS RESPONSE",getXHRResponse.data)
         })
     }
-    else alert(`WRONG DATA ${url}, ${data}`);
+    else alert(`WRONG DATA ${url}, ${xmlReadyPayload}`);
   }
-
   onInputChange(event: any) {
     this.title = event.target.value;
   }
@@ -75,8 +79,6 @@ export class SelectorComponent{
       this.dataInput = event;
       if(event) {
         console.log("INPUT DATA= ",this.dataInput)
-        // this.dataService.imageData = event.target.value;
-        //this.execute(this.url,this.dataInput);
       }
   }
 
@@ -85,13 +87,21 @@ export class SelectorComponent{
       .then((response) => {
         this.processes = response;
         this.cg.config.requestParams.identifier = this.processes[0].value.identifier;
-        // this.setConfiguration = true;
+        this.setConfiguration = true;
       })
       .catch((e) => {console.log(e)})
   }
 
   onSetConfiguration = async () => {
-    await describeProcess(this.url,this.cg.config.requestParams);
+    await describeProcess(this.url,this.cg.config.requestParams)
+      .then((response) => {
+        if(response){
+          this.describeProcessResult = response;
+          console.log(this.describeProcessResult)
+          response ? this.describeProcessIsReady = true : null;
+        }
+        else alert("something went wrong")
+      })
   }
 
   onFileReady = async (file: any) => {
@@ -126,7 +136,12 @@ export class SelectorComponent{
       }
     })
 
-    this.execute(this.url, promise)
+    if(promise && this.processes){
+      this.fileIsReady = true;
+      this.base64File = await promise;
+      // this.execute(this.url, promise,this.processes)
+    }
+
   }
   onFileInputChange = async (event: any) => {
     this.url = 'http://wps.esemc.nsc.ru:8080/geoserver/ows'

@@ -1,8 +1,9 @@
 import axios from "axios";
-import {getXHRResponse} from "rxjs/internal/ajax/getXHRResponse";
+import '../config.js'
 import {findTagByName, findTagByPath, findTagsByPath} from "xml-utils";
+import {configureExecuteBody} from "../config";
 
-  function getDataFromGetCapabilities(outerXML: string){
+function getDataFromGetCapabilities(outerXML: string){
     let resultProcessContent: any = [];
     const keyOfProcess = findTagByName(outerXML,'ows:Title')?.inner;
     if(outerXML){
@@ -19,53 +20,53 @@ import {findTagByName, findTagByPath, findTagsByPath} from "xml-utils";
     return resultProcessContent
   }
 
-  function getDataFromDescribeProcess(outerXML: string){
+  async function getDataFromDescribeProcess(outerXML: string){
     let inputDataOuter = findTagsByPath(outerXML,['wps:ProcessDescriptions',"ProcessDescription","DataInputs",'Input']);
     let outputDataOuter = findTagsByPath(outerXML,['wps:ProcessDescriptions',"ProcessDescription","ProcessOutputs"]);
     let inputItems: any = [];
-    let arrayOfOutputStringTypes = [];
+    let arrayOfOutputStringTypes: any[] = [];
     let result: any = {};
     const arrayOfOutputTypes = findTagsByPath(outputDataOuter[0].outer,['Output','ComplexOutput','Supported','Format']);
 
-    console.log(arrayOfOutputTypes)
+    // console.log(arrayOfOutputTypes)
+    // console.log(promise)
+    return new Promise((resolve, reject) => {
+      for (let i = 0; i < inputDataOuter.length; i++) { //set Inputs Types array
+        if (inputDataOuter[i].inner) {
 
-    for(let i = 0; i < inputDataOuter.length; i++){ //set Inputs Types array
-      if(inputDataOuter[i].inner){
-
-        const inputItem: any = {
-          identifier: findTagByName(inputDataOuter[i].outer, 'ows:Identifier')?.inner,
-          title: findTagByName(inputDataOuter[i].outer, 'ows:Title')?.inner,
-          complexData: {
-            mimeType: findTagByPath(inputDataOuter[i].outer, ['ComplexData', 'Supported', 'Format', 'MimeType'])?.inner,
-            encoding: findTagByPath(inputDataOuter[i].outer, ['ComplexData', 'Supported', 'Format', 'Encoding'])?.inner,
-          },
-          literalData: {
-            dataType: findTagByPath(inputDataOuter[i].outer, ['LiteralData', 'DataType'])?.inner,
+          const inputItem: any = {
+            identifier: findTagByName(inputDataOuter[i].outer, 'ows:Identifier')?.inner,
+            title: findTagByName(inputDataOuter[i].outer, 'ows:Title')?.inner,
+            complexData: {
+              mimeType: findTagByPath(inputDataOuter[i].outer, ['ComplexData', 'Supported', 'Format', 'MimeType'])?.inner,
+              encoding: findTagByPath(inputDataOuter[i].outer, ['ComplexData', 'Supported', 'Format', 'Encoding'])?.inner,
+            },
+            literalData: {
+              dataType: findTagByPath(inputDataOuter[i].outer, ['LiteralData', 'DataType'])?.inner,
+            }
           }
+          inputItems.push(inputItem);
         }
-        inputItems.push(inputItem);
       }
-    }
 
-    for(let i: number = 0;i < arrayOfOutputTypes.length;i++){
-      arrayOfOutputStringTypes.push(findTagByName(arrayOfOutputTypes[i].outer,"MimeType")?.inner)
-    }
+      for (let i: number = 0; i < arrayOfOutputTypes.length; i++) {
+        arrayOfOutputStringTypes.push(findTagByName(arrayOfOutputTypes[i].outer, "MimeType")?.inner)
+      }
 
-    const outputItem: any = { //set outputs types
-        identifier: findTagByPath(outputDataOuter[0].outer,['Output','ows:Identifier'])?.inner,
-        title: findTagByPath(outputDataOuter[0].outer,['Output','ows:Title'])?.inner,
+      const outputItem: any = { //set outputs types
+        identifier: findTagByPath(outputDataOuter[0].outer, ['Output', 'ows:Identifier'])?.inner,
+        title: findTagByPath(outputDataOuter[0].outer, ['Output', 'ows:Title'])?.inner,
         complexOutput: {
           mimeType: arrayOfOutputStringTypes,
         }
-    }
+      }
 
-    result = {
-      input : inputItems,
-      output : outputItem
-    }
-    console.log(result);
-
-    return result
+      result = {//creating describe process result data
+        input: inputItems,
+        output: outputItem
+      }
+      resolve(result);
+    })
   }
 
   export  async function getProcesses(wpsUrl: string,params: any) {
@@ -101,8 +102,7 @@ import {findTagByName, findTagByPath, findTagsByPath} from "xml-utils";
 }
 
 export async function describeProcess(url: string,params: any){
-  let dataInputs: [];
-  let dataOutputs: [];
+  let result;
 
   const currentOptions = {
     headers:{
@@ -117,12 +117,25 @@ export async function describeProcess(url: string,params: any){
   }
 
     try {
+    console.log('describe process start')
       await axios.get(url,currentOptions)
         .then(response => {
-          getDataFromDescribeProcess(response.data);
+          result = getDataFromDescribeProcess(response.data)
+          // return getDataFromDescribeProcess(response.data)
         })
     }catch (e){
       console.log(e);
     }
+    finally {
+      console.log("describe process end")
+    }
+    return await result;
+}
+
+export function configureTheExecutePayload(base64Data: string, wpsParams: any, process: any){
+  // let xmlExecutePayload: string = '';
+  const xmlExecuteBody = configureExecuteBody(base64Data, wpsParams, process)
+
+  // return xmlExecutePayload;
 }
 

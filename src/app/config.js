@@ -45,5 +45,14 @@ export const config = {
     version : '1.0.0',
     request : { execute: 'Execute',getCapabilities: 'GetCapabilities', describeProcess: 'DescribeProcess'},
     identifier : 'default'
+  },
+}
+export const configureExecuteBody = (base64Data, wpsParams, process) => {
+  const xmlIdentifier = `<ows:Identifier>${process.identifier}</ows:Identifier>`;
+  let dataInputs = `<wps:DataInputs>${data}</wps:DataInputs>`
+  for(let i = 0;i < wpsParams.input; i++){
+    console.log(i)
   }
+
+
 }

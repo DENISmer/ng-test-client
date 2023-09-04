@@ -1,5 +1,8 @@
 div {
-  color: #888787;
+  transition: 1s;
+  background-color: rgba(133, 105, 105, 0.91);
+  color: #d7d3d3;
+  margin: 1%;
   padding: .8rem;
   border: solid 1px #333333;
   border-radius: 10px;
@@ -10,13 +13,17 @@ div {
   align-items: center;
   justify-content: center;
   select {
-    width: 20rem;
+    width: 15rem;
+  }
+  button {
+    padding: 1%;
+    border-radius: 2rem;
   }
   input {
-    width: 8rem;
-    height: auto;
-    display: flex;
-    border-radius: 10px;
+    //width: 8rem;
+    ////height: auto;
+    ////display: flex;
+    //border-radius: 2rem;
   }
   span {
     margin: 0 2rem;
@@ -25,5 +32,9 @@ div {
   }
   i {
     cursor: pointer;
+  }
+  text-area {
+    min-width: 120rem;
+    margin: 10rem;
   }
 }
