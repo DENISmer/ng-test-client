@@ -1,5 +1,5 @@
 import axios from "axios";
-import '../config.js'
+import '../config'
 import {findTagByName, findTagByPath, findTagsByPath} from "xml-utils";
 import {configureExecuteBody} from "../config";
 
@@ -32,6 +32,7 @@ function getDataFromGetCapabilities(outerXML: string){
     // console.log(promise)
     return new Promise((resolve, reject) => {
       for (let i = 0; i < inputDataOuter.length; i++) { //set Inputs Types array
+        console.log(inputDataOuter[i].outer)
         if (inputDataOuter[i].inner) {
 
           const inputItem: any = {
@@ -42,7 +43,7 @@ function getDataFromGetCapabilities(outerXML: string){
               encoding: findTagByPath(inputDataOuter[i].outer, ['ComplexData', 'Supported', 'Format', 'Encoding'])?.inner,
             },
             literalData: {
-              dataType: findTagByPath(inputDataOuter[i].outer, ['LiteralData', 'DataType'])?.inner,
+              dataType: findTagByPath(inputDataOuter[i].outer, ['LiteralData', 'ows:DataType'])?.inner,
             }
           }
           inputItems.push(inputItem);
@@ -132,9 +133,9 @@ export async function describeProcess(url: string,params: any){
     return await result;
 }
 
-export function configureTheExecutePayload(base64Data: string, wpsParams: any, process: any){
+export function configureTheExecutePayload(base64Data: string, wpsParams: any, process: any, doubleValue: number, intValue: number){
   // let xmlExecutePayload: string = '';
-  const xmlExecuteBody = configureExecuteBody(base64Data, wpsParams, process)
+  return configureExecuteBody(base64Data, wpsParams, process, doubleValue, intValue)
 
   // return xmlExecutePayload;
 }

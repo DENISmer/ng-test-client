@@ -1,4 +1,5 @@
-<div [ngStyle]="{backgroundColor: colors[currentColor]}">
+<div class="mainDiv">
+<div class="forPanelDiv">
   <h2>
     wps test client for CCA Process
   </h2>
@@ -10,26 +11,53 @@
 <!--  <select >-->
 <!--    <option *ngFor="let item of config.wpsUrls">{{item}}</option>-->
 <!--  </select>-->
-  <button (click)="onGetCapabilities()">GET PROCESSES</button>
+  <button *ngIf="!setProcess" (click)="onGetCapabilities()">GET PROCESSES</button>
   <p>select wps process</p>
   <select>
     <option *ngFor="let item of processes">{{item.value.title}}</option>
   </select>
   <div *ngIf="setConfiguration">
-    <p>GET CONFIGURATION</p>
-    <!--  <div *ngIf="describeProcessIsReady">-->
-    <!--    {{describeProcessResult.output.identifier}}-->
-    <!--  </div>-->
-    <button (click)="onSetConfiguration()">GET CONFIGURATION</button>
+    <p>CONFIGURATION</p>
+    <p>_______________________</p>
+    <span *ngFor="let item of describeProcessResult.input">
+
+
+      <span *ngIf="item.complexData.mimeType !== undefined">
+        {{item.complexData.mimeType}}
+        <input type="file" class="file-upload" accept=".tif,.tiff" [(ngModel)]="inputFile" (change)="onFileInputChange($event)">
+        <p>OR</p>
+        <textarea  placeholder="image/tiff" type="text" [(ngModel)]="textAreaValue" (ngModelChange)="onTextAreaChange($event)"></textarea>
+      </span>
+
+      <span *ngIf="item.literalData.dataType !== undefined">
+        {{item.title}}
+        {{inputDouble}}
+        <input *ngIf="item.literalData.dataType ==='xs:double'" (change)="onInputDoubleChange($event)" type="number" placeholder="double value" max="1" min="0"/>
+      </span>
+
+      <span *ngIf="item.literalData.dataType !== undefined">
+        {{item.title}}
+        {{inputInt}}
+        <input *ngIf="item.literalData.dataType ==='xs:int'" (change)="onInputIntChange($event)" type="number" placeholder="int value"/>
+      </span>
+
+    </span>
+
   </div>
 
+  <span *ngIf="!setConfiguration && setProcess">
+          <button (click)="onSetConfiguration()">GET CONFIGURATION</button>
+  </span>
 
   <div *ngIf="describeProcessIsReady">
-    <input type="file" class="file-upload"[(ngModel)]="inputFile" (change)="onFileInputChange($event)">
-    <p>OR</p>
-    <textarea  placeholder="image/tiff" type="text" [(ngModel)]="textAreaValue" (ngModelChange)="onTextAreaChange($event)"></textarea>
     <button *ngIf="setConfiguration && describeProcessResult && fileIsReady" (click)="execute()">execute</button>
   </div>
 
+</div>
 
+<div class="map-container">
+  <div class="map-frame">
+    <div id="map"></div>
+  </div>
+</div>
 </div>
