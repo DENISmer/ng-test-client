@@ -6,6 +6,8 @@ import '../shared/wps.requests'
 import * as L from 'leaflet';
 import {configureTheExecutePayload, describeProcess, getProcesses} from "../shared/wps.requests";
 import {findTagByPath, findTagsByPath} from "xml-utils";
+import GeoRasterLayer from "georaster-layer-for-leaflet";
+// import * as GeoRasterLayer from "georaster-layer-for-leaflet";
 
 
 declare function require(name:string): any;
@@ -85,8 +87,9 @@ export class SelectorComponent implements OnInit{
   }
 
   base64ToTif = (base64File: string) => {
-    const parse_georaster = require('georaster')
-    const GeoRasterLayer = require("georaster-layer-for-leaflet");
+    console.log("Base64ToTif: ",base64File);
+    const parse_georaster = require('georaster');
+    // const GeoRasterLayer = require("georaster-layer-for-leaflet");
     const binaryString = atob(base64File);
 
     let bytes = new Uint8Array(binaryString.length);
